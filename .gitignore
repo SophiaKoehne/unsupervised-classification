@@ -1,0 +1,6 @@
+data/*
+!data/.gitkeep
+Results/*
+!Results/.gitkeep
+__pycache__/*
+.ipynb_checkpoints/*
