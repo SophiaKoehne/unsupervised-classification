@@ -71,18 +71,12 @@ class clusterSOM:
 
     def plot_SOM_kmeans(self, ax, title = ''):
         '''plots the k-means cluster labels of the SOM nodes in different colors '''
-        colors =  ['C0', 'C1', 'C2', 'C3', 'C4', 'C6', 'C7', 'C8']
-        cmap = mpl.colors.LinearSegmentedColormap.from_list('cluster',colors[0:5])
-        mpl.cm.register_cmap(name='cluster', cmap=cmap)
         ax = visualize_SOMclusters_simple(ax, np.reshape(self.SOM_labels, (self.params_SOM['ysize'],self.params_SOM['xsize'])), cluster = len(np.unique(self.SOM_labels)))#, cmap = cmap)
         ax.set_title(title)
         return ax
 
     def plot_2D_kmeans(self, ax, title = ''):
         '''plots the data samples in the color of their BMUs k-means cluster labels'''
-        colors =  ['C0', 'C1', 'C2', 'C3', 'C4', 'C6', 'C7', 'C8']
-        cmap = mpl.colors.LinearSegmentedColormap.from_list('cluster',colors[0:5])
-        mpl.cm.register_cmap(name='cluster', cmap=cmap)
         heatmap2d(ax, np.reshape(self.data_labels, (self.params_2D['ysize'], self.params_2D['xsize'])),title, ymin = self.params_2D['ymin'], ymax= self.params_2D['ymax'], cluster = len(np.unique(self.SOM_labels)))#, colmap=cmap)
         return ax
 
@@ -106,11 +100,6 @@ class clusterSOM:
 
     def plot_handpicked_region(self, tpls, title = ''):
         '''plots the k-means labels of the SOM nodes in different colors + the handpicked region in black'''
-        #colormap
-        colors =  ['C0', 'C1', 'C2', 'C3', 'C4', 'k', 'C9', 'C9']
-        cmap6 = mpl.colors.LinearSegmentedColormap.from_list('cluster',colors[0:6])
-        mpl.cm.register_cmap(name='cluster', cmap=cmap6)
-
         tpls__ = [(sub[1], sub[0]) for sub in tpls]
         blob_matches_BMUs = []
         blob_matches_ = []
@@ -140,11 +129,11 @@ class clusterSOM:
 
         plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=None, hspace=0.25)
 
-        f_ax1 = visualize_SOMclusters_simple(f_ax1, np.reshape(hp_lbls_, (self.params_SOM['ysize'],self.params_SOM['xsize'])))
+        f_ax1 = visualize_SOMclusters_simple(f_ax1, np.reshape(hp_lbls_, (self.params_SOM['ysize'],self.params_SOM['xsize'])), hp = True)
         f_ax1.set_title('a)')
 
         #handpick eval
-        f_ax2 = heatmap2d(f_ax2,np.reshape(data_lbls,(self.params_2D['ysize'],self.params_2D['xsize'])),'', ymin = self.params_2D['ymin'], ymax = self.params_2D['ymax'], cluster=6, filename = '')
+        f_ax2 = heatmap2d(f_ax2,np.reshape(data_lbls,(self.params_2D['ysize'],self.params_2D['xsize'])),'', ymin = self.params_2D['ymin'], ymax = self.params_2D['ymax'], cluster = 6, filename = '', hp = True)
         f_ax2.set_title('b)')
         return (fig)
 
@@ -171,5 +160,4 @@ class clusterSOM:
             matches[int(clust)] = count/len(ind_ref[0])
             counts[int(clust)] = count
         R = np.sum(counts) / len(np.where(ref != 0)[0])
-        print('R = ', np.round(R,2))
         return (R, matches, counts)

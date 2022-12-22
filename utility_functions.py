@@ -13,6 +13,11 @@ colors =  ['C0', 'C1', 'C2', 'C3', 'C4', 'C6', 'C7', 'C8']
 cmap = mpl.colors.LinearSegmentedColormap.from_list('test',colors[0:5])
 mpl.cm.register_cmap(name='cluster', cmap=cmap)
 
+#colormap with black for sixth 'cluster' aka the handpicked region
+colors =  ['C0', 'C1', 'C2', 'C3', 'C4', 'k', 'C7', 'C8']
+cmap = mpl.colors.LinearSegmentedColormap.from_list('test',colors[0:6])
+mpl.cm.register_cmap(name='cluster-hp', cmap=cmap)
+
 #make negative contours solid lines
 mpl.rcParams.update({"contour.negative_linestyle" : 'solid'})
 
@@ -111,12 +116,15 @@ def slicedata(array,res = 2128/200, xmin = 0,xmax = 200, ymin = 0, ymax = 200):
         slicedarr = slicedarr[:,int(res*xmin):int(res*xmax)]
     return(slicedarr)
 
-def visualize_SOMclusters_simple(ax, labels, cluster = 6, cmap = None):
+def visualize_SOMclusters_simple(ax, labels, cluster = 6, cmap = None, hp = False):
     '''plots the given SOM labels in corresponding colors'''
     if cmap:
         colmap = cmap
     else:
-        colmap = mpl.cm.get_cmap('cluster', cluster)
+        if hp:
+            colmap = mpl.cm.get_cmap('cluster-hp', cluster)
+        else:
+            colmap = mpl.cm.get_cmap('cluster', cluster)
     im = ax.imshow(labels, cmap = colmap, origin ='lower', aspect = 'auto')
 
     labels = labels.astype(int)
@@ -160,7 +168,7 @@ def fast_norm(x):
     """
     return np.sqrt(np.dot(x, x.T))
 
-def heatmap2d(ax, arr : np.ndarray,ttl,xmin = 0,xmax = 200, ymin = 0, ymax = 200,norm = None, colmap=None,dir="Clusters", cluster=0, filename = '', power =False, f=None):
+def heatmap2d(ax, arr : np.ndarray,ttl,xmin = 0,xmax = 200, ymin = 0, ymax = 200,norm = None, colmap=None,dir="Clusters", cluster=0, filename = '', power =False, f=None, hp = False):
     '''plots the arr in the 2D plane'''
     xsize=arr[0,:].size
     ysize=arr[:,0].size
@@ -176,11 +184,14 @@ def heatmap2d(ax, arr : np.ndarray,ttl,xmin = 0,xmax = 200, ymin = 0, ymax = 200
     ax.set_xticks(xticks, xlabels)#, fontsize = 25)
     ax.set_yticks(yticks, ylabels)#, fontsize = 25)
 
-    if cluster != 0:# and colmap not None:
+    if cluster != 0: #cluster plots need discretized colormaps
         if colmap:
             cmap = colmap
         else:
-            cmap = mpl.cm.get_cmap('cluster', cluster)
+            if hp:
+                cmap = mpl.cm.get_cmap('cluster-hp', cluster)
+            else:
+                cmap = mpl.cm.get_cmap('cluster', cluster)
         colmap = cmap
 
     im = ax.imshow(arr, cmap=colmap,origin='lower',interpolation='none',  norm=norm)#norm = matplotlib.colors.TwoSlopeNorm(vmin=vmin, vmax=vmax, vcenter=vcenter))# norm = TwoSlopeNorm(vmin=-0.35, vcenter=0, vmax=0)) #vmin = -0.35, vmax = 0)# norm=SymLogNorm(linthresh=0.01, vmin=-0.07, vmax=0.07) )
